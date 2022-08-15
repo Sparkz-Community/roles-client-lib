@@ -11,8 +11,8 @@
     "dist/*.{js,css}"
   ],
   "scripts": {
-    "build": "npm run lint && vue-cli-service build --report --target lib --name @sparkz-community/common-client-lib ./src/index.js",
-    "lint": "vue-cli-service lint --fix",
+    "build": "npm run lint && vue-cli-service build --report --target lib --name @sparkz-community/roles-client-lib ./src/index.js",
+    "lint": "eslint --fix --ext .js,.vue src",
     "docs:build": "vuepress build docs",
     "docs:dev": "vuepress dev docs",
     "release:pre": "npm run build && npm version prerelease && npm publish --tag pre --access public && git push origin",
