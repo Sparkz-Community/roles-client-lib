@@ -8,6 +8,7 @@ export default async (
     FeathersClient,
     extend_hooks = {},
     extend_class_fn = (superClass) => superClass,
+    idField = '_id',
     state = {},
     getters = {},
     actions = {},
@@ -24,8 +25,6 @@ export default async (
       super(data, options);
     }
   }
-
-  IrRolesRoles.modelName = 'IrRolesRoles';
 
   IrRolesRoles.diffOnPatch = function (data) {
     console.log('diffOnPatch data', data);
@@ -57,7 +56,7 @@ export default async (
     Model,
     servicePath,
     clients: {api: feathersClient},
-    idField: '_id',
+    idField,
     state,
     getters,
     actions,

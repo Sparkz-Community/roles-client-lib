@@ -8,6 +8,7 @@ export default async (
     FeathersClient,
     extend_hooks = {},
     extend_class_fn = (superClass) => superClass,
+    idField = '_id',
     state = {},
     getters = {},
     actions = {},
@@ -23,29 +24,30 @@ export default async (
     constructor(data, options) {
       super(data, options);
     }
-
-    // Define default properties here
-    static instanceDefaults(/*data, {models, store}*/) {
-      return {
-        name: '',
-        inRoles: [],
-        rules: [],
-        createdBy: null,
-        updatedBy: null,
-        active: true,
-      };
-    };
-
-    static diffOnPatch(data) {
-      console.log('diffOnPatch data', data);
-      if (data['_id']) {
-        const originalObject = IrRolesAbilities.store.state['ir-roles-abilities'].keyedById[data['_id']];
-        return diff(originalObject, data);
-      } else {
-        return data;
-      }
-    };
   }
+
+  // Define default properties here
+  IrRolesAbilities.instanceDefaults = function (/*data, {models, store}*/) {
+    return {
+      name: '',
+      inRoles: [],
+      rules: [],
+      createdBy: null,
+      updatedBy: null,
+      active: true,
+    };
+  };
+
+  IrRolesAbilities.diffOnPatch = function (data) {
+    console.log('diffOnPatch data', data);
+    if (data['_id']) {
+      const originalObject = IrRolesAbilities.store.state['ir-roles-abilities'].keyedById[data['_id']];
+      return diff(originalObject, data);
+    } else {
+      return data;
+    }
+  };
+
 
   let Model = IrRolesAbilities;
   if (typeof extend_class_fn === 'function') {
@@ -57,7 +59,7 @@ export default async (
     Model,
     servicePath,
     clients: {api: feathersClient},
-    idField: '_id',
+    idField,
     state,
     getters,
     actions,
