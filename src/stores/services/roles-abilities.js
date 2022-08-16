@@ -27,7 +27,7 @@ export default async (
   }
 
   // Define default properties here
-  RolesAbilities.instanceDefaults = function (/*data, {models, store}*/) {
+  RolesAbilities.instanceDefaults = function (/*data, {models, stores}*/) {
     return {
       name: '',
       inRoles: [],
