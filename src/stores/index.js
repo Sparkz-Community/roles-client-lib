@@ -1,10 +1,21 @@
 // plugins
-import Abilities from './services/abilities';
-import Roles from './services/roles';
-import Rules from './services/rules';
+import abilities, {Abilities} from './services/abilities';
+import roles, {Roles} from './services/roles';
+import rules, {Rules} from './services/rules';
 
-export {
+const classes = {
   Abilities,
   Roles,
   Rules,
+};
+
+const stores = {
+  abilities,
+  roles,
+  rules,
+};
+
+export default {
+  classes,
+  stores,
 };

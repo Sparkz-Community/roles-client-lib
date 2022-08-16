@@ -1,8 +1,8 @@
 {
   "name": "@sparkz-community/roles-client-lib",
   "version": "0.1.0",
-  "description": "IY Foundation Roles Client Library",
-  "author": "IY Foundation Development <dev@sparkz-community.com>",
+  "description": "Sparkz Community Roles Client Library",
+  "author": "Sparkz Community <dev@sparkz.community>",
   "license": "MIT",
   "main": "src/index.js",
   "files": [
