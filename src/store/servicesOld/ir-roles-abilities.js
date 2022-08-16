@@ -1,7 +1,5 @@
-import {defineStore} from 'feathers-pinia';
 import {diff, lodash} from '@sparkz-community/common-client-lib';
 
-// eslint-disable-next-line no-undef
 const {$lget, $lmergeWith, $lisNil} = lodash;
 
 Array.prototype.insert = function (index, ...value) {
@@ -32,64 +30,70 @@ export default async (
     extend_class_fn = (superClass) => superClass,
     state = {},
     getters = {},
+    mutations = {},
     actions = {},
   } = {}) => {
   if ($lisNil(FeathersClient)) {
     throw Error('FeathersClient argument was be set');
   }
-  const {
-    default: feathersClient,
-    BaseModel,
-  } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
+  const {default: feathersClient, makeServicePlugin, BaseModel} = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
   class IrRolesAbilities extends BaseModel {
     constructor(data, options) {
       super(data, options);
     }
-
-    // Define default properties here
-    static instanceDefaults(/*data, {models, store}*/) {
-      return {
-        name: '',
-        inRoles: [],
-        rules: [],
-        createdBy: null,
-        updatedBy: null,
-        active: true,
-      };
-    };
-
-    static diffOnPatch(data) {
-      console.log('diffOnPatch data', data);
-      if (data['_id']) {
-        const originalObject = IrRolesAbilities.store.state['ir-roles-abilities'].keyedById[data['_id']];
-        return diff(originalObject, data);
-      } else {
-        return data;
-      }
-    };
   }
+
+  IrRolesAbilities.modelName = 'IrRolesAbilities';
+
+  IrRolesAbilities.diffOnPatch = function (data) {
+    console.log('diffOnPatch data', data);
+    if (data['_id']) {
+      const originalObject = IrRolesAbilities.store.state['ir-roles-abilities'].keyedById[data['_id']];
+      return diff(originalObject, data);
+    } else {
+      return data;
+    }
+  };
+
+  IrRolesAbilities.instanceDefaults = function () {
+    return {
+      name: '',
+      inRoles: [],
+      rules: [],
+      createdBy: null,
+      updatedBy: null,
+      active: true,
+    };
+  };
 
   let Model = IrRolesAbilities;
   if (typeof extend_class_fn === 'function') {
     Model = extend_class_fn(IrRolesAbilities);
   }
 
-  const servicePath = 'users';
-  const useAbilitiesStore = defineStore({
+  const servicePath = 'ir-roles-abilities';
+  const servicePlugin = makeServicePlugin({
     Model,
+    service: feathersClient.service(servicePath),
     servicePath,
-    clients: {api: feathersClient},
-    idField: '_id',
     state,
     getters,
+    mutations,
     actions,
   });
 
-// Set up the client-side Feathers hooks.
+  // const beforeHook = context => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('------------->>>> beforeHook - context.method:', context.method);
+  //   console.log('------------->>>> beforeHook - context.params:', context.params);
+  //   console.log('------------->>>> beforeHook - context.data:', context.data);
+  // };
+
+  // Setup the client-side Feathers hooks.
   feathersClient.service(servicePath).hooks($lmergeWith({
     before: {
-      all: [],
+      all: [/*beforeHook*/],
       find: [],
       get: [],
       create: [],
@@ -117,5 +121,5 @@ export default async (
     },
   }, extend_hooks, hookCustomizer));
 
-  return useAbilitiesStore;
+  return servicePlugin;
 };
