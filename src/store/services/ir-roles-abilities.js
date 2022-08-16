@@ -1,29 +1,7 @@
-import {defineStore} from 'feathers-pinia';
-import {diff, lodash} from '@sparkz-community/common-client-lib';
+import {defineStore, BaseModel} from 'feathers-pinia';
+import {diff, lodash, hookCustomizer} from '@sparkz-community/common-client-lib';
 
-// eslint-disable-next-line no-undef
-const {$lget, $lmergeWith, $lisNil} = lodash;
-
-Array.prototype.insert = function (index, ...value) {
-  this.splice(index, 0, ...value);
-  return this;
-};
-
-function hookCustomizer(obj_value, src_value) {
-  if (Array.isArray(obj_value)) {
-    let list = [...obj_value];
-    for (let item of src_value) {
-      let set_index = $lget(item, 'index', undefined);
-      let set_value = $lget(item, 'value', undefined);
-      if (item instanceof Object && !Array.isArray(item) && set_index !== undefined && set_value !== undefined) {
-        list.insert(set_index, set_value);
-      } else {
-        list.push(item);
-      }
-    }
-    return list;
-  }
-}
+const {$lisNil, $lmergeWith} = lodash;
 
 export default async (
   {
@@ -39,7 +17,6 @@ export default async (
   }
   const {
     default: feathersClient,
-    BaseModel,
   } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
   class IrRolesAbilities extends BaseModel {
@@ -75,7 +52,7 @@ export default async (
     Model = extend_class_fn(IrRolesAbilities);
   }
 
-  const servicePath = 'users';
+  const servicePath = 'ir-roles-abilities';
   const useAbilitiesStore = defineStore({
     Model,
     servicePath,
