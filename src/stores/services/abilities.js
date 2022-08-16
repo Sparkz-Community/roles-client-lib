@@ -1,5 +1,5 @@
 import {defineStore, BaseModel} from 'feathers-pinia';
-import {diff, lodash, hookCustomizer} from '@sparkz-community/common-client-lib';
+import {lodash, hookCustomizer} from '@sparkz-community/common-client-lib';
 
 const {$lisNil, $lmergeWith} = lodash;
 
@@ -20,46 +20,32 @@ export default async (
     default: feathersClient,
   } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
-  class RolesRules extends BaseModel {
+  class Abilities extends BaseModel {
     constructor(data, options) {
       super(data, options);
     }
   }
 
-  RolesRules.diffOnPatch = function (data) {
-    console.log('diffOnPatch data', data);
-    if (data['_id']) {
-      const originalObject = RolesRules.store.state['roles-rules'].keyedById[data['_id']];
-      return diff(originalObject, data);
-    } else {
-      return data;
-    }
-  };
-
-  RolesRules.instanceDefaults = function () {
+  // Define default properties here
+  Abilities.instanceDefaults = function (/*data, {models, stores}*/) {
     return {
-      name: undefined,
-      note: undefined,
-      inAbilities: [],
-      action: [],
-      subject: undefined,
-      fields: [],
-      conditions: {},
-      reason: undefined,
-      inverted: false,
-      createdBy: undefined,
-      updatedBy: undefined,
+      name: '',
+      inRoles: [],
+      rules: [],
+      createdBy: null,
+      updatedBy: null,
       active: true,
     };
   };
 
-  let Model = RolesRules;
+
+  let Model = Abilities;
   if (typeof extend_class_fn === 'function') {
-    Model = extend_class_fn(RolesRules);
+    Model = extend_class_fn(Abilities);
   }
 
-  const servicePath = 'roles-rules';
-  const useRulesStore = defineStore({
+  const servicePath = 'abilities';
+  const useStore = defineStore({
     Model,
     servicePath,
     clients: {api: feathersClient},
@@ -79,7 +65,7 @@ export default async (
   // Set up the client-side Feathers hooks.
   feathersClient.service(servicePath).hooks($lmergeWith({
     before: {
-      all: [/*beforeHook*/],
+      all: [],
       find: [],
       get: [],
       create: [],
@@ -107,5 +93,5 @@ export default async (
     },
   }, extend_hooks, hookCustomizer));
 
-  return useRulesStore;
+  return useStore;
 };

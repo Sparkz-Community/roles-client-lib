@@ -1,5 +1,5 @@
 import {defineStore, BaseModel} from 'feathers-pinia';
-import {diff, lodash, hookCustomizer} from '@sparkz-community/common-client-lib';
+import {lodash, hookCustomizer} from '@sparkz-community/common-client-lib';
 
 const {$lisNil, $lmergeWith} = lodash;
 
@@ -20,39 +20,36 @@ export default async (
     default: feathersClient,
   } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
-  class RolesRoles extends BaseModel {
+  class Rules extends BaseModel {
     constructor(data, options) {
       super(data, options);
     }
   }
 
-  RolesRoles.diffOnPatch = function (data) {
-    console.log('diffOnPatch data', data);
-    if (data['_id']) {
-      const originalObject = RolesRoles.store.state['-roles-roles'].keyedById[data['_id']];
-      return diff(originalObject, data);
-    } else {
-      return data;
-    }
-  };
-
-  RolesRoles.instanceDefaults = function () {
+  Rules.instanceDefaults = function () {
     return {
-      name: '',
-      abilityIds: [],
-      whitelist: [],
-      blacklist: [],
+      name: undefined,
+      note: undefined,
+      inAbilities: [],
+      action: [],
+      subject: undefined,
+      fields: [],
+      conditions: {},
+      reason: undefined,
+      inverted: false,
+      createdBy: undefined,
+      updatedBy: undefined,
       active: true,
     };
   };
 
-  let Model = RolesRoles;
+  let Model = Rules;
   if (typeof extend_class_fn === 'function') {
-    Model = extend_class_fn(RolesRoles);
+    Model = extend_class_fn(Rules);
   }
 
-  const servicePath = '-roles-roles';
-  const useRolesStore = defineStore({
+  const servicePath = 'rules';
+  const useStore = defineStore({
     Model,
     servicePath,
     clients: {api: feathersClient},
@@ -100,5 +97,5 @@ export default async (
     },
   }, extend_hooks, hookCustomizer));
 
-  return useRolesStore;
+  return useStore;
 };

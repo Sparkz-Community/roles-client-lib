@@ -1,10 +1,10 @@
 // plugins
-import RolesAbilities from './services/roles-abilities';
-import RolesRoles from './services/roles-roles';
-import RolesRules from './services/roles-rules';
+import Abilities from './services/abilities';
+import Roles from './services/roles';
+import Rules from './services/rules';
 
 export {
-  RolesAbilities,
-  RolesRoles,
-  RolesRules,
+  Abilities,
+  Roles,
+  Rules,
 };

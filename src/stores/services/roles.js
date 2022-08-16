@@ -1,5 +1,5 @@
 import {defineStore, BaseModel} from 'feathers-pinia';
-import {diff, lodash, hookCustomizer} from '@sparkz-community/common-client-lib';
+import {lodash, hookCustomizer} from '@sparkz-community/common-client-lib';
 
 const {$lisNil, $lmergeWith} = lodash;
 
@@ -20,42 +20,29 @@ export default async (
     default: feathersClient,
   } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
-  class RolesAbilities extends BaseModel {
+  class Roles extends BaseModel {
     constructor(data, options) {
       super(data, options);
     }
   }
 
-  // Define default properties here
-  RolesAbilities.instanceDefaults = function (/*data, {models, stores}*/) {
+  Roles.instanceDefaults = function () {
     return {
       name: '',
-      inRoles: [],
-      rules: [],
-      createdBy: null,
-      updatedBy: null,
+      abilityIds: [],
+      whitelist: [],
+      blacklist: [],
       active: true,
     };
   };
 
-  RolesAbilities.diffOnPatch = function (data) {
-    console.log('diffOnPatch data', data);
-    if (data['_id']) {
-      const originalObject = RolesAbilities.store.state['-roles-abilities'].keyedById[data['_id']];
-      return diff(originalObject, data);
-    } else {
-      return data;
-    }
-  };
-
-
-  let Model = RolesAbilities;
+  let Model = Roles;
   if (typeof extend_class_fn === 'function') {
-    Model = extend_class_fn(RolesAbilities);
+    Model = extend_class_fn(Roles);
   }
 
-  const servicePath = '-roles-abilities';
-  const useAbilitiesStore = defineStore({
+  const servicePath = 'roles';
+  const useStore = defineStore({
     Model,
     servicePath,
     clients: {api: feathersClient},
@@ -75,7 +62,7 @@ export default async (
   // Set up the client-side Feathers hooks.
   feathersClient.service(servicePath).hooks($lmergeWith({
     before: {
-      all: [],
+      all: [/*beforeHook*/],
       find: [],
       get: [],
       create: [],
@@ -103,5 +90,5 @@ export default async (
     },
   }, extend_hooks, hookCustomizer));
 
-  return useAbilitiesStore;
+  return useStore;
 };
