@@ -1,27 +1,7 @@
-import {diff, lodash} from '@sparkz-community/common-client-lib';
+import {defineStore, BaseModel} from 'feathers-pinia';
+import {diff, lodash, hookCustomizer} from '@sparkz-community/common-client-lib';
 
-const {$lget, $lmergeWith, $lisNil} = lodash;
-
-Array.prototype.insert = function (index, ...value) {
-  this.splice(index, 0, ...value);
-  return this;
-};
-
-function hookCustomizer(obj_value, src_value) {
-  if (Array.isArray(obj_value)) {
-    let list = [...obj_value];
-    for (let item of src_value) {
-      let set_index = $lget(item, 'index', undefined);
-      let set_value = $lget(item, 'value', undefined);
-      if (item instanceof Object && !Array.isArray(item) && set_index !== undefined && set_value !== undefined) {
-        list.insert(set_index, set_value);
-      } else {
-        list.push(item);
-      }
-    }
-    return list;
-  }
-}
+const {$lisNil, $lmergeWith} = lodash;
 
 export default async (
   {
@@ -30,13 +10,14 @@ export default async (
     extend_class_fn = (superClass) => superClass,
     state = {},
     getters = {},
-    mutations = {},
     actions = {},
   } = {}) => {
   if ($lisNil(FeathersClient)) {
     throw Error('FeathersClient argument was be set');
   }
-  const {default: feathersClient, makeServicePlugin, BaseModel} = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
+  const {
+    default: feathersClient,
+  } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
   class IrRolesRules extends BaseModel {
     constructor(data, options) {
@@ -79,13 +60,13 @@ export default async (
   }
 
   const servicePath = 'ir-roles-rules';
-  const servicePlugin = makeServicePlugin({
+  const useRulesStore = defineStore({
     Model,
-    service: feathersClient.service(servicePath),
     servicePath,
+    clients: {api: feathersClient},
+    idField: '_id',
     state,
     getters,
-    mutations,
     actions,
   });
 
@@ -96,7 +77,7 @@ export default async (
   //   console.log('------------->>>> beforeHook - context.data:', context.data);
   // };
 
-  // Setup the client-side Feathers hooks.
+  // Set up the client-side Feathers hooks.
   feathersClient.service(servicePath).hooks($lmergeWith({
     before: {
       all: [/*beforeHook*/],
@@ -127,5 +108,5 @@ export default async (
     },
   }, extend_hooks, hookCustomizer));
 
-  return servicePlugin;
+  return useRulesStore;
 };

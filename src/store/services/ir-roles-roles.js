@@ -70,7 +70,7 @@ export default async (
   //   console.log('------------->>>> beforeHook - context.data:', context.data);
   // };
 
-  // Setup the client-side Feathers hooks.
+  // Set up the client-side Feathers hooks.
   feathersClient.service(servicePath).hooks($lmergeWith({
     before: {
       all: [/*beforeHook*/],
