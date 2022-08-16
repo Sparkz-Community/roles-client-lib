@@ -20,46 +20,39 @@ export default async (
     default: feathersClient,
   } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
-  class IrRolesRules extends BaseModel {
+  class RolesRoles extends BaseModel {
     constructor(data, options) {
       super(data, options);
     }
   }
 
-  IrRolesRules.diffOnPatch = function (data) {
+  RolesRoles.diffOnPatch = function (data) {
     console.log('diffOnPatch data', data);
     if (data['_id']) {
-      const originalObject = IrRolesRules.store.state['ir-roles-rules'].keyedById[data['_id']];
+      const originalObject = RolesRoles.store.state['-roles-roles'].keyedById[data['_id']];
       return diff(originalObject, data);
     } else {
       return data;
     }
   };
 
-  IrRolesRules.instanceDefaults = function () {
+  RolesRoles.instanceDefaults = function () {
     return {
-      name: undefined,
-      note: undefined,
-      inAbilities: [],
-      action: [],
-      subject: undefined,
-      fields: [],
-      conditions: {},
-      reason: undefined,
-      inverted: false,
-      createdBy: undefined,
-      updatedBy: undefined,
+      name: '',
+      abilityIds: [],
+      whitelist: [],
+      blacklist: [],
       active: true,
     };
   };
 
-  let Model = IrRolesRules;
+  let Model = RolesRoles;
   if (typeof extend_class_fn === 'function') {
-    Model = extend_class_fn(IrRolesRules);
+    Model = extend_class_fn(RolesRoles);
   }
 
-  const servicePath = 'ir-roles-rules';
-  const useRulesStore = defineStore({
+  const servicePath = '-roles-roles';
+  const useRolesStore = defineStore({
     Model,
     servicePath,
     clients: {api: feathersClient},
@@ -107,5 +100,5 @@ export default async (
     },
   }, extend_hooks, hookCustomizer));
 
-  return useRulesStore;
+  return useRolesStore;
 };

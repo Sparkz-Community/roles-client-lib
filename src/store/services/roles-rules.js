@@ -20,42 +20,46 @@ export default async (
     default: feathersClient,
   } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
-  class IrRolesAbilities extends BaseModel {
+  class RolesRules extends BaseModel {
     constructor(data, options) {
       super(data, options);
     }
   }
 
-  // Define default properties here
-  IrRolesAbilities.instanceDefaults = function (/*data, {models, store}*/) {
-    return {
-      name: '',
-      inRoles: [],
-      rules: [],
-      createdBy: null,
-      updatedBy: null,
-      active: true,
-    };
-  };
-
-  IrRolesAbilities.diffOnPatch = function (data) {
+  RolesRules.diffOnPatch = function (data) {
     console.log('diffOnPatch data', data);
     if (data['_id']) {
-      const originalObject = IrRolesAbilities.store.state['ir-roles-abilities'].keyedById[data['_id']];
+      const originalObject = RolesRules.store.state['roles-rules'].keyedById[data['_id']];
       return diff(originalObject, data);
     } else {
       return data;
     }
   };
 
+  RolesRules.instanceDefaults = function () {
+    return {
+      name: undefined,
+      note: undefined,
+      inAbilities: [],
+      action: [],
+      subject: undefined,
+      fields: [],
+      conditions: {},
+      reason: undefined,
+      inverted: false,
+      createdBy: undefined,
+      updatedBy: undefined,
+      active: true,
+    };
+  };
 
-  let Model = IrRolesAbilities;
+  let Model = RolesRules;
   if (typeof extend_class_fn === 'function') {
-    Model = extend_class_fn(IrRolesAbilities);
+    Model = extend_class_fn(RolesRules);
   }
 
-  const servicePath = 'ir-roles-abilities';
-  const useAbilitiesStore = defineStore({
+  const servicePath = 'roles-rules';
+  const useRulesStore = defineStore({
     Model,
     servicePath,
     clients: {api: feathersClient},
@@ -75,7 +79,7 @@ export default async (
   // Set up the client-side Feathers hooks.
   feathersClient.service(servicePath).hooks($lmergeWith({
     before: {
-      all: [],
+      all: [/*beforeHook*/],
       find: [],
       get: [],
       create: [],
@@ -103,5 +107,5 @@ export default async (
     },
   }, extend_hooks, hookCustomizer));
 
-  return useAbilitiesStore;
+  return useRulesStore;
 };

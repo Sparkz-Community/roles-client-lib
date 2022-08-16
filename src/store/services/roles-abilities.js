@@ -20,39 +20,42 @@ export default async (
     default: feathersClient,
   } = typeof FeathersClient === 'function' ? await FeathersClient() : FeathersClient;
 
-  class IrRolesRoles extends BaseModel {
+  class RolesAbilities extends BaseModel {
     constructor(data, options) {
       super(data, options);
     }
   }
 
-  IrRolesRoles.diffOnPatch = function (data) {
+  // Define default properties here
+  RolesAbilities.instanceDefaults = function (/*data, {models, store}*/) {
+    return {
+      name: '',
+      inRoles: [],
+      rules: [],
+      createdBy: null,
+      updatedBy: null,
+      active: true,
+    };
+  };
+
+  RolesAbilities.diffOnPatch = function (data) {
     console.log('diffOnPatch data', data);
     if (data['_id']) {
-      const originalObject = IrRolesRoles.store.state['ir-roles-roles'].keyedById[data['_id']];
+      const originalObject = RolesAbilities.store.state['-roles-abilities'].keyedById[data['_id']];
       return diff(originalObject, data);
     } else {
       return data;
     }
   };
 
-  IrRolesRoles.instanceDefaults = function () {
-    return {
-      name: '',
-      abilityIds: [],
-      whitelist: [],
-      blacklist: [],
-      active: true,
-    };
-  };
 
-  let Model = IrRolesRoles;
+  let Model = RolesAbilities;
   if (typeof extend_class_fn === 'function') {
-    Model = extend_class_fn(IrRolesRoles);
+    Model = extend_class_fn(RolesAbilities);
   }
 
-  const servicePath = 'ir-roles-roles';
-  const useRolesStore = defineStore({
+  const servicePath = '-roles-abilities';
+  const useAbilitiesStore = defineStore({
     Model,
     servicePath,
     clients: {api: feathersClient},
@@ -72,7 +75,7 @@ export default async (
   // Set up the client-side Feathers hooks.
   feathersClient.service(servicePath).hooks($lmergeWith({
     before: {
-      all: [/*beforeHook*/],
+      all: [],
       find: [],
       get: [],
       create: [],
@@ -100,5 +103,5 @@ export default async (
     },
   }, extend_hooks, hookCustomizer));
 
-  return useRolesStore;
+  return useAbilitiesStore;
 };
