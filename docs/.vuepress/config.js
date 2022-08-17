@@ -8,7 +8,7 @@ module.exports = {
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Components', link: '/components/' },
-      { text: 'Github', link: 'https://gitlab.com/iy4u/roles-client-lib' },
+      { text: 'Github', link: 'https://github.com/Sparkz-Community/roles-client-lib' },
     ],
     sidebar: [
       {
