@@ -15,7 +15,7 @@ export default async (
     extend_hooks = {},
     extend_class_fn = (superClass) => superClass,
     idField = '_id',
-    state = {},
+    state = () => ({}),
     getters = {},
     actions = {},
   } = {}) => {
