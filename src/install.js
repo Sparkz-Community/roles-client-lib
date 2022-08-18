@@ -4,11 +4,6 @@ import { Ability, subject } from '@casl/ability';
 import * as components from './components';
 
 const install = (app, {prefix, loadComponents = true} = {}) => {
-  for (let key in components) {
-    let _key = prefix ? prefix + key : key;
-    app.component(_key, components[key]);
-  }
-
   if (loadComponents) {
     for (let key in components) {
       let _key = prefix ? prefix + key : key;
