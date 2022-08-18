@@ -12,12 +12,16 @@ const install = (app, {prefix, loadComponents = true} = {}) => {
   }
 
   app.use(abilitiesPlugin, new Ability);
-  // Vue.prototype.$createEntity = function (path, item) {
-  //   const classFn =  new Function('item', `return new class ${path} {constructor(args) {Object.assign(this, item)}}`);
-  //   const newClass = classFn(item);
-  //   return newClass;
-  // };
-  app.prototype.$subject = subject;
+
+  function createEntity(path, item) {
+    const classFn =  new Function('item', `return new class ${path} {constructor(args) {Object.assign(this, item)}}`);
+    return classFn(item);
+  }
+  app.config.globalProperties.$createEntity = createEntity;
+  app.provide('$createEntity', createEntity);
+
+  app.config.globalProperties.$subject = subject;
+  app.provide('$subject', subject);
 };
 
 // auto install
